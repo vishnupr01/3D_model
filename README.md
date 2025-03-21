@@ -38,10 +38,12 @@ threejs-viewer/
 │   ├── models/       # 3D models (.obj, .mtl, textures)
 │-- src/
 │   ├── components/
-│   │   ├── ThreeDViewer.js  # Three.js implementation
+│   │   ├── ThreeDViewer.jsx  # Main 3D Viewer Component
+│   │   ├── modelViewer.js    # Utility for loading models
 │-- pages/
 │-- package.json
 │-- README.md
+
 ```
 
 ## How to Use
