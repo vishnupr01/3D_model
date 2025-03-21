@@ -15,14 +15,22 @@ const ThreeDViewer = () => {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xaaaaaa);
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
     camera.position.set(0, 2, 10);
     camera.lookAt(0, 0, 0);
 
+    // Renderer setup
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
 
+    // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
@@ -33,7 +41,11 @@ const ThreeDViewer = () => {
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
-    // Load Model
+    // Texture Loader
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load("/models/capsule0.jpg");
+
+    // Load Model with Materials
     const mtlLoader = new MTLLoader();
     mtlLoader.load(
       "/models/capsule.mtl",
@@ -44,6 +56,12 @@ const ThreeDViewer = () => {
         objLoader.load(
           "/models/capsule.obj",
           (object) => {
+            object.traverse((child) => {
+              if (child.isMesh) {
+                child.material.map = texture; // Ensure texture is applied
+                child.material.needsUpdate = true;
+              }
+            });
             object.scale.set(1, 1, 1);
             scene.add(object);
           },
@@ -55,6 +73,7 @@ const ThreeDViewer = () => {
       (error) => console.error("Error loading MTL:", error)
     );
 
+    // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
@@ -81,7 +100,11 @@ const ThreeDViewer = () => {
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: "100vw", height: "100vh" }} />;
+  return (
+    <>
+      <div ref={mountRef} style={{ width: "100vw", height: "100vh" }}></div>
+    </>
+  );
 };
 
 export default ThreeDViewer;
